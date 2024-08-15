@@ -1,10 +1,10 @@
 # Makefile for test use
 
 CC     := cc
-CFLAG  := -DDCT_TEST -std=c99 -Wall -Wextra -Werror $(ARG_CFLAG)
-INC    := -I../../include
+CFLAG  := -DRDFT_TEST -std=c99 -Wall -Wextra -Werror $(ARG_CFLAG)
+INC    := -I../../../include
 LIB    := -lm
-SRCS   := ../memory.c test.c main.c
+SRCS   := ../../memory.c test.c main.c
 TARGET := a.out
 
 help:

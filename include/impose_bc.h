@@ -19,12 +19,4 @@ extern int impose_bc_uy_y (
     array_t * const uy
 );
 
-extern int impose_bc_p_x (
-    array_t * const p
-);
-
-extern int impose_bc_p_y (
-    array_t * const p
-);
-
 #endif // IMPOSE_BC_H

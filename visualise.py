@@ -9,7 +9,7 @@ dnames = [dname for dname in dnames if os.path.isdir(dname)]
 dnames = sorted(dnames)
 
 fig = pyplot.figure(figsize=(8, 8))
-axes = [fig.add_subplot(211), fig.add_subplot(212)]
+axes = [fig.add_subplot(121), fig.add_subplot(122)]
 for dname in dnames:
     ux = np.load(f"{dname}/ux.npy")
     uy = np.load(f"{dname}/uy.npy")
@@ -23,6 +23,6 @@ for dname in dnames:
     axes[0].set(**keywords)
     axes[1].set(**keywords)
     pyplot.show(block=False)
-    pyplot.pause(1.e-1)
+    pyplot.pause(5.e-1)
 pyplot.close()
 

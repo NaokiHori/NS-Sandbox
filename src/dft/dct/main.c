@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "dct.h"
+#include "dft/dct.h"
 
 // discrete cosine transforms of type 2 and 3, Lee 1984
 

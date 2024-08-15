@@ -25,7 +25,7 @@ static int init_ux (
 ) {
   for (size_t j = 1; j <= NY; j++) {
     for (size_t i = 1; i <= NX; i++) {
-      ux[j][i] = -1.;
+      ux[j][i] = 0.;
     }
   }
   if (X_PERIODIC) {
@@ -60,7 +60,7 @@ static int init_uy (
 ) {
   for (size_t j = 1; j <= NY; j++) {
     for (size_t i = 1; i <= NX; i++) {
-      uy[j][i] = 0.;
+      uy[j][i] = -1.;
     }
   }
   if (X_PERIODIC) {
@@ -103,20 +103,10 @@ static int init_p (
       LOGGER_FAILURE("failed to exchange halo in x (p)");
       goto abort;
     }
-  } else {
-    if (0 != impose_bc_p_x(p)) {
-      LOGGER_FAILURE("failed to impose boundary condition in x (p)");
-      goto abort;
-    }
   }
   if (Y_PERIODIC) {
     if (0 != exchange_halo_y(p)) {
       LOGGER_FAILURE("failed to exchange halo in y (p)");
-      goto abort;
-    }
-  } else {
-    if (0 != impose_bc_p_y(p)) {
-      LOGGER_FAILURE("failed to impose boundary condition in y (p)");
       goto abort;
     }
   }
@@ -129,10 +119,10 @@ static int init_weight (
     array_t * const weight
 ) {
   const double center[2] = {
-    5. * LX / 6.,
-    0.501 * LY,
+    0.501 * LX,
+    5. * LY / 6.,
   };
-  const double radius = LY / 16.;
+  const double radius = LX / 16.;
   for (size_t j = 0; j <= NY + 1; j++) {
     const double y = 0.5 * (2 * j - 1) * DY;
     for (size_t i = 0; i <= NX + 1; i++) {

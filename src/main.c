@@ -21,10 +21,10 @@ int main (
   if (0 != flow_solver_init(&flow_solver)) {
     return 1;
   }
-  const double time_max = 1.e+1;
+  const double time_max = 5.e+0;
   const schedule_t rate = {
     .monitor = 1.e-1,
-    .save = 5.e-1,
+    .save = 2.e-1,
   };
   schedule_t next = rate;
   for (double time = 0.; time < time_max; ) {

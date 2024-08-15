@@ -4,14 +4,14 @@
 #include <stddef.h> // size_t
 #include <stdbool.h> // true, false
 
-#define X_PERIODIC false
-#define Y_PERIODIC true
+#define X_PERIODIC true
+#define Y_PERIODIC false
 
-#define NX 384
-#define NY 128
+#define NX 128
+#define NY 384
 
-#define LX 3.
-#define LY 1.
+#define LX 1.
+#define LY 3.
 
 #define DX (LX / NX)
 #define DY (LY / NY)

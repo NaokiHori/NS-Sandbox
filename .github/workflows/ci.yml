@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        cases: ["dct", "tdm", "transpose"]
+        cases: ["dft/dct", "dft/rdft", "tdm", "transpose"]
     steps:
       - name: Install dependencies
         run: |

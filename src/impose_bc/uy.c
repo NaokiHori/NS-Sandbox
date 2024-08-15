@@ -13,7 +13,7 @@ int impose_bc_uy_x (
   const double uy_xm = 0.;
   const double uy_xp = 0.;
   for (size_t j = 0; j <= NY + 1; j++) {
-    uy[j][     0] = 2. * uy_xm + uy[j][ 1];
+    uy[j][     0] = 2. * uy_xm - uy[j][ 1];
     uy[j][NX + 1] = 2. * uy_xp - uy[j][NX];
   }
   return 0;
@@ -29,9 +29,8 @@ int impose_bc_uy_y (
     goto abort;
   }
   for (size_t i = 0; i <= NX + 1; i++) {
-    uy[     0][i] = 0.;
-    uy[     1][i] = 0.;
-    uy[NY + 1][i] = 0.;
+    uy[     0][i] = uy[1][i];
+    uy[NY + 1][i] = -1.;
   }
   return 0;
 abort:
