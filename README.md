@@ -1,7 +1,5 @@
 # NS Sandbox
 
-UNDER CONSTRUCTION
-
 [![CI](https://github.com/NaokiHori/NS-Sandbox/actions/workflows/ci.yml/badge.svg)](https://github.com/NaokiHori/NS-Sandbox/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/NaokiHori/NS-Sandbox)](https://opensource.org/license/MIT)
 [![Last Commit](https://img.shields.io/github/last-commit/NaokiHori/NS-Sandbox/main)](https://github.com/NaokiHori/NS-Sandbox/commits/main)
@@ -17,7 +15,7 @@ To achieve this, the following approaches are adopted:
 
 - Euler-forward time-stepping
 - Fully-explicit diffusive treatments
-- No MPI parallelization
+- No multi-process (e.g., `MPI`) parallelization
 
 For the sake of transparency (and for fun), in-house Fourier transforms, linear matrix solvers, and matrix transpose routines are used, despite their sub-optimal performance.
 
