@@ -1,6 +1,7 @@
 #if !defined(TDM_H)
 #define TDM_H
 
+#include <stddef.h> // size_t
 #include <stdbool.h> // bool
 
 typedef struct tdm_internal_t tdm_internal_t;
@@ -19,7 +20,7 @@ extern int tdm_init_plan (
     const size_t nitems,
     const size_t repeat_for,
     const bool is_periodic,
-    tdm_plan_t ** tdm_plan
+    tdm_plan_t ** const tdm_plan
 );
 
 extern int tdm_solve (
@@ -35,7 +36,7 @@ extern int tdm_solve (
 );
 
 extern int tdm_destroy_plan (
-    tdm_plan_t ** tdm_plan
+    tdm_plan_t ** const tdm_plan
 );
 
 #endif // TDM_H

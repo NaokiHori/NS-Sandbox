@@ -2,7 +2,7 @@
 #define MONITOR_H
 
 #include <stddef.h> // size_t
-#include "flow_field.h"
+#include "flow_field.h" // flow_field_t
 
 extern int monitor (
     const size_t step,

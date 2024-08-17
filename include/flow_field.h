@@ -1,7 +1,6 @@
 #if !defined(FLOW_FIELD_H)
 #define FLOW_FIELD_H
 
-#include <stddef.h> // size_t
 #include "array.h" // array_t
 
 typedef struct {
