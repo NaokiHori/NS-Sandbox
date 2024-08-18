@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/NaokiHori/NS-Sandbox)](https://opensource.org/license/MIT)
 [![Last Commit](https://img.shields.io/github/last-commit/NaokiHori/NS-Sandbox/main)](https://github.com/NaokiHori/NS-Sandbox/commits/main)
 
-![thumbnail](https://github.com/NaokiHori/NS-Sandbox/blob/main/thumbnail.jpg)
+[![thumbnail](https://github.com/NaokiHori/NS-Sandbox/blob/main/thumbnail.jpg)](https://youtu.be/MdViM5HzCDs)
 
 An extremely simple two-dimensional incompressible Navier-Stokes solver designed to test various numerical algorithms.
 
