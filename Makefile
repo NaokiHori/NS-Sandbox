@@ -5,8 +5,8 @@ LIB    := -lm
 SRCDIR := src
 OBJDIR := obj
 SRCS   := $(shell find $(SRCDIR) -type f -name "*.c")
-OBJS   := $(patsubst %.c,obj/%.o,$(SRCS))
-DEPS   := $(patsubst %.c,obj/%.d,$(SRCS))
+OBJS   := $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
+DEPS   := $(patsubst %.c,$(OBJDIR)/%.d,$(SRCS))
 OUTDIR := output
 TARGET := a.out
 
