@@ -54,3 +54,52 @@ jobs:
           make ARG_CFLAG="-fopenmp -flto" all
           OMP_NUM_THREADS=2 ./a.out
 
+  check-convergence:
+    name: Check convergence of finite-difference scheme
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: artifacts
+      DIRECTORY_NAME: artifacts/spatial_convergence
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update && \
+          sudo apt-get -y install make
+      - name: Install python dependencies for post-processing
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy matplotlib
+      - name: Checkout repository
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Compile and run
+        run: |
+          mkdir -p ${{ env.DIRECTORY_NAME }}
+          schemes=("compute_dux" "compute_duy")
+          for scheme in ${schemes[@]}; do
+            cd src/integrate/predict/${scheme}
+            bash test.sh advx
+            bash test.sh advy
+            bash test.sh difx
+            bash test.sh dify
+            bash test.sh pres
+            cd ../../../..
+          done
+      - name: Plot convergence results
+        run: |
+          python .github/workflows/plot_convergence.py src/integrate/predict/compute_dux ${{ env.DIRECTORY_NAME }}/compute_dux.png
+          python .github/workflows/plot_convergence.py src/integrate/predict/compute_duy ${{ env.DIRECTORY_NAME }}/compute_duy.png
+      - name: Commit and push artifacts
+        run: |
+          set -x
+          set -e
+          git config --local user.email "36466440+NaokiHori@users.noreply.github.com"
+          git config --local user.name "NaokiHori"
+          git switch -c ${{ env.BRANCH_NAME }}
+          git add ${{ env.DIRECTORY_NAME }}
+          git commit -m "Update artifacts" -a || true
+          git push -f origin ${{ env.BRANCH_NAME }}
+

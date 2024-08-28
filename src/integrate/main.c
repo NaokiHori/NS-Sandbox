@@ -3,6 +3,7 @@
 #include "flow_solver.h"
 #include "integrate.h"
 #include "./internal.h"
+#include "./predict.h"
 
 int integrate (
     flow_field_t * const flow_field,

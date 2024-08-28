@@ -1,5 +1,11 @@
+NX     := 128
+NY     := 384
+LX     := 1.
+LY     := 3.
+DOMAIN := -DNX=$(NX) -DNY=$(NY) -DLX=$(LX) -DLY=$(LY)
+
 CC     := cc
-CFLAG  := -std=c99 -Wall -Wextra -Werror -O3 $(ARG_CFLAG)
+CFLAG  := -std=c99 -Wall -Wextra -Werror -O3 $(ARG_CFLAG) $(DOMAIN)
 INC    := -Iinclude
 LIB    := -lm
 SRCDIR := src

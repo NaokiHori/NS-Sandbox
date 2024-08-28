@@ -66,7 +66,8 @@ For the sake of transparency (and for fun), in-house Fourier transforms, linear 
 
 ## Domain Size
 
-Modify `include/domain.h` and re-build the source.
+For several reasons, the domain sizes (spatial resolutions and lengths) are defined in `Makefile`.
+Modify the corresponding parameter and re-build the entire source.
 
 ## Multi-thread Parallelization
 

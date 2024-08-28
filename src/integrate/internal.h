@@ -9,12 +9,6 @@ extern int decide_dt (
     double * const dt
 );
 
-extern int predict (
-    flow_field_t * const flow_field,
-    flow_solver_t * const flow_solver,
-    const double dt
-);
-
 extern int solve_poisson (
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,

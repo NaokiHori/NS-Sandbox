@@ -1,3 +1,5 @@
 a.out
 obj
 output
+*.dat
+*.gp
