@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Naoki Hori
+ * Copyright 2022 Naoki Hori
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -34,33 +34,35 @@
  * @param[out] dtype            : data type, e.g. "'<f8'"
  * @param[out] is_fortran_order : row-major order (false) or column-major order (true)
  * @param[in]  fp               : file stream to which the header is loaded
- * @return                      : (success) loaded header size (in bytes)
- *                                (failure) 0
+ * @param[out] header_size      : loaded header size (in bytes)
+ * @return                      : success: 0, failure: otherwise
  */
-extern size_t snpyio_r_header(
+extern int snpyio_r_header(
     size_t * ndim,
     size_t ** shape,
     char ** dtype,
     bool * is_fortran_order,
-    FILE * fp
+    FILE * fp,
+    size_t * header_size
 );
 
 /**
  * @brief write NPY header
- * @param[in] ndim             : number of dimensions of the data set, e.g. 2
- * @param[in] shape            : number of points of the data set in each dimension, e.g. [3, 4]
- * @param[in] dtype            : data type, e.g. "'<f8'"
- * @param[in] is_fortran_order : row-major order (false) or column-major order (true)
- * @param[in] fp               : file stream to which the header is written
- * @return                     : (success) written header size (in bytes)
- *                               (failure) 0
+ * @param[in]  ndim             : number of dimensions of the data set, e.g. 2
+ * @param[in]  shape            : number of points of the data set in each dimension, e.g. [3, 4]
+ * @param[in]  dtype            : data type, e.g. "'<f8'"
+ * @param[in]  is_fortran_order : row-major order (false) or column-major order (true)
+ * @param[in]  fp               : file stream to which the header is written
+ * @param[out] header_size      : written header size (in bytes)
+ * @return                      : success: 0, failure: otherwise
  */
-extern size_t snpyio_w_header(
+extern int snpyio_w_header(
     const size_t ndim,
     const size_t * shape,
     const char dtype[],
     const bool is_fortran_order,
-    FILE * fp
+    FILE * fp,
+    size_t * header_size
 );
 
 #endif // SNPYIO_H

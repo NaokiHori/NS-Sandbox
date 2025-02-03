@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Naoki Hori
+ * Copyright 2022 Naoki Hori
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -665,12 +665,13 @@ static int extract_is_fortran_order(
 }
 
 // one of the main functions, see header
-size_t snpyio_r_header(
+int snpyio_r_header(
     size_t * ndim,
     size_t ** shape,
     char ** dtype,
     bool * is_fortran_order,
-    FILE * fp
+    FILE * fp,
+    size_t * header_size
 ){
   if(0 != sanitise_fp(fp)){
     goto err_hndl;
@@ -678,23 +679,23 @@ size_t snpyio_r_header(
   // NOTE: header_len is the total size of the dictionary and the padding
   //   and thus is different from header_size, which is
   //   the total size of the whole header
-  size_t header_size = 0;
+  *header_size = 0;
   // load each component of the header
   //   and move file pointer forward
-  if(0 != load_magic_string(fp, &header_size)){
+  if(0 != load_magic_string(fp, header_size)){
     goto err_hndl;
   }
   uint8_t major_version = 0;
   uint8_t minor_version = 0;
-  if(0 != load_versions(fp, &major_version, &minor_version, &header_size)){
+  if(0 != load_versions(fp, &major_version, &minor_version, header_size)){
     goto err_hndl;
   }
   size_t header_len  = 0;
-  if(0 != load_header_len(fp, major_version, &header_len, &header_size)){
+  if(0 != load_header_len(fp, major_version, &header_len, header_size)){
     goto err_hndl;
   }
   uint8_t * dict_and_padding = NULL;
-  if(0 != load_dict_and_padding(fp, header_len, &dict_and_padding, &header_size)){
+  if(0 != load_dict_and_padding(fp, header_len, &dict_and_padding, header_size)){
     goto err_hndl;
   }
   // obtain dictionary from the mixture of the dictionary and the padding
@@ -723,10 +724,10 @@ size_t snpyio_r_header(
   // NOTE: user is responsible for deallocating them
   detach_list(*shape);
   detach_list(*dtype);
-  return header_size;
+  return 0;
 err_hndl:
   error_handlings();
-  return 0;
+  return 1;
 }
 
 // check positiveness of the array sizes
@@ -1053,12 +1054,13 @@ static int create_header_len(
 }
 
 // one of the main functions, see header
-size_t snpyio_w_header(
+int snpyio_w_header(
     const size_t ndim,
     const size_t * shape,
     const char dtype[],
     const bool is_fortran_order,
-    FILE * fp
+    FILE * fp,
+    size_t * header_size
 ){
   // check parameters given by user
   if(0 != sanitise_shape(ndim, shape)){
@@ -1085,8 +1087,8 @@ size_t snpyio_w_header(
   uint8_t * padding = NULL;
   size_t n_padding = 0;
   uint8_t major_version = 0;
-  size_t header_size = 0;
-  if(0 != create_padding(&padding, &n_padding, &major_version, &header_size, n_dict)){
+  *header_size = 0;
+  if(0 != create_padding(&padding, &n_padding, &major_version, header_size, n_dict)){
     goto err_hndl;
   }
   // comptue header_len, sum of n_dict + n_padding
@@ -1100,7 +1102,7 @@ size_t snpyio_w_header(
   // store all information to a continuous buffer
   //   and write it to the given file stream
   //   to reduce the number of write calls
-  uint8_t * buffer = memory_alloc(1, header_size);
+  uint8_t * buffer = memory_alloc(1, *header_size);
   const void * elements[] = {
     magic_string,
     &major_version,
@@ -1122,7 +1124,7 @@ size_t snpyio_w_header(
     memcpy(buffer + offset, elements[n], size);
     offset += size;
   }
-  if(1 != fwrite(buffer, header_size, 1, fp)){
+  if(1 != fwrite(buffer, *header_size, 1, fp)){
     SNPYIO_ERROR("failed to write header to file\n");
     goto err_hndl;
   }
@@ -1131,10 +1133,10 @@ size_t snpyio_w_header(
   memory_free(dict);
   memory_free(padding);
   memory_free(header_len);
-  SNPYIO_LOGGING("header_size: %zu\n", header_size);
-  return header_size;
+  SNPYIO_LOGGING("header_size: %zu\n", *header_size);
+  return 0;
 err_hndl:
   error_handlings();
-  return 0;
+  return 1;
 }
 

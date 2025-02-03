@@ -14,7 +14,7 @@
 
 #define NDIMS 2
 
-static int concat_dir_name (
+static int concat_dir_name(
     const size_t id,
     char ** const dir_name
 ){
@@ -32,7 +32,7 @@ abort:
   return 1;
 }
 
-static int create_directory (
+static int create_directory(
     const char dir_name[]
 ){
   errno = 0;
@@ -49,7 +49,7 @@ abort:
   return 1;
 }
 
-static int write_npy_file (
+static int write_npy_file(
     const char dir_name[],
     const char dset_name[],
     const size_t ndims,
@@ -58,7 +58,7 @@ static int write_npy_file (
     const size_t size,
     const void * data
 ){
-  int retval = 0;
+  int error_code = 0;
   char * file_name = NULL;
   FILE * fp = NULL;
   size_t header_size = 0;
@@ -75,7 +75,7 @@ static int write_npy_file (
     file_name = memory_alloc(nchars, sizeof(char));
     file_name[nchars - 1] = '\0';
     if (nchars - 1 != snprintf(file_name, nchars, "%s%s%s%s", dir_name, slash, dset_name, suffix)) {
-      retval = 1;
+      error_code = 1;
       LOGGER_FAILURE("snprintf returns unexpected result");
       goto abort;
     }
@@ -86,13 +86,13 @@ static int write_npy_file (
     fp = fopen(file_name, "w");
     if (NULL == fp) {
       perror(file_name);
-      retval = 1;
+      error_code = 1;
       LOGGER_FAILURE("failed to open file (attempted to write NPY header)");
       goto abort;
     }
-    header_size = snpyio_w_header(ndims, shape, dtype, false, fp);
-    if (0 == header_size) {
-      retval = 1;
+    size_t header_size = 0;
+    if (0 != snpyio_w_header(ndims, shape, dtype, false, fp, &header_size)) {
+      error_code = 1;
       LOGGER_FAILURE("failed to write NPY header");
       goto abort;
     }
@@ -104,12 +104,12 @@ static int write_npy_file (
     fp = fopen(file_name, "a");
     if (NULL == fp) {
       perror(file_name);
-      retval = 1;
+      error_code = 1;
       LOGGER_FAILURE("failed to open file (attempted to write data)");
       goto abort;
     }
     if (0 != fseek(fp, (long)header_size, SEEK_SET)) {
-      retval = 1;
+      error_code = 1;
       LOGGER_FAILURE("failed to move file pointer after NPY header");
       goto abort;
     }
@@ -118,7 +118,7 @@ static int write_npy_file (
       nitems *= shape[dim];
     }
     if (nitems != fwrite(data, size, nitems, fp)) {
-      retval = 1;
+      error_code = 1;
       LOGGER_FAILURE("failed to write data");
       goto abort;
     }
@@ -128,24 +128,24 @@ abort:
   if (NULL != fp) {
     fclose(fp);
   }
-  return retval;
+  return error_code;
 }
 
-int save (
+int save(
     const size_t id,
     const size_t step,
     const double time,
     const flow_field_t * const flow_field
 ) {
-  int retval = 0;
+  int error_code = 0;
   char * dir_name = NULL;
   if (0 != concat_dir_name(id, &dir_name)) {
-    retval = 1;
+    error_code = 1;
     LOGGER_FAILURE("failed to concatenate directory name");
     goto abort;
   }
   if (0 != create_directory(dir_name)) {
-    retval = 1;
+    error_code = 1;
     LOGGER_FAILURE("failed to create a directory");
     goto abort;
   }
@@ -156,6 +156,6 @@ int save (
   write_npy_file(dir_name,  "p", NDIMS, (size_t [NDIMS]){NY + 2, NX + 2}, "'<f8'", sizeof(double), flow_field-> p);
 abort:
   memory_free(dir_name);
-  return retval;
+  return error_code;
 }
 
