@@ -66,8 +66,8 @@ For the sake of transparency (and for fun), in-house Fourier transforms, linear 
 
 ## Domain Size
 
-For several reasons, the domain sizes (spatial resolutions and lengths) are defined in `Makefile`.
-Modify the corresponding parameter and re-build the entire source.
+The domain sizes (spatial resolutions and lengths) are defined in `src/domain.c`.
+Modify the corresponding parameter and re-build the source.
 
 ## Multi-thread Parallelization
 
@@ -76,7 +76,7 @@ This project utilizes `OpenMP` for parallelization for convenience.
 
 ## Note
 
-For simplicity, all flow fields have `NX + 2` by `NY + 2` elements, regardless of the type of arrays.
-Here, `NX` and `NY` represent the degrees of freedom in the `x` and `y` directions, respectively.
+For simplicity, all flow fields have `domain->nx + 2` by `domain->ny + 2` elements, regardless of the type of arrays.
+Here, `domain->nx` and `domain->ny` represent the degrees of freedom in the `x` and `y` directions, respectively.
 This approach simplifies the incorporation of different boundary conditions (wall-bounded, periodic, inflow-outflow).
 
