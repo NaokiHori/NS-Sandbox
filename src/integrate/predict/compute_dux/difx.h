@@ -1,13 +1,14 @@
 #if !defined(DIFX_H)
 #define DIFX_H
 
-#include "array.h"
+#include "domain.h"
 
-extern int ux_difx (
+extern int ux_difx(
+    const domain_t * const domain,
     const double c,
-    const array_t * const ux,
+    double ** const ux,
     const double dt,
-    array_t * const dux
+    double ** const dux
 );
 
 #endif // DIFX_H

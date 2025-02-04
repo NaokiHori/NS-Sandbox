@@ -1,15 +1,17 @@
-#include "array.h"
-#include "domain.h"
 #include "./advx.h"
 
-int ux_advx (
-    const array_t * const ux,
+int ux_advx(
+    const domain_t * const domain,
+    double ** const ux,
     const double dt,
-    array_t * const dux
+    double ** const dux
 ) {
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  const double dx = domain->dx;
 #pragma omp parallel for
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = ux_imin; i <= NX; i++) {
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = ux_imin; i <= nx; i++) {
       const double ux_xm = + 0.5 * ux[j    ][i - 1]
                            + 0.5 * ux[j    ][i    ];
       const double ux_xp = + 0.5 * ux[j    ][i    ]
@@ -19,8 +21,8 @@ int ux_advx (
       const double dux_xp = - ux[j    ][i    ]
                             + ux[j    ][i + 1];
       dux[j][i] -= dt * (
-          + 0.5 / DX * ux_xm * dux_xm
-          + 0.5 / DX * ux_xp * dux_xp
+          + 0.5 / dx * ux_xm * dux_xm
+          + 0.5 / dx * ux_xp * dux_xp
       );
     }
   }
@@ -29,37 +31,58 @@ int ux_advx (
 
 #if defined(TEST)
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> // printf
+#include <stdlib.h> // strtol
+#include "array.h"
+#include "domain.h"
 #include "../test_util.h"
 #include "./test_util.h"
 
-int main (
-    void
+int main(
+    int argc,
+    char * argv[]
 ) {
-  array_t * const     ux = malloc((NX + 2) * (NY + 2) * sizeof(double));
-  array_t * const result = malloc((NX + 2) * (NY + 2) * sizeof(double));
-  array_t * const answer = malloc((NX + 2) * (NY + 2) * sizeof(double));
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = ux_imin; i <= NX; i++) {
+  if (2 != argc) {
+    printf("invalid number of arguments: %d, expected 2\n", argc);
+    return 1;
+  }
+  const double length = 1.;
+  const size_t nx = strtol(argv[1], NULL, 10);
+  const size_t ny = strtol(argv[1], NULL, 10);
+  const domain_t domain = {
+    .lx = length,
+    .ly = length,
+    .nx = nx,
+    .ny = ny,
+    .dx = length / nx,
+    .dy = length / ny,
+  };
+  double ** ux = NULL;
+  double ** result = NULL;
+  double ** answer = NULL;
+  array_init(nx + 2, ny + 2, &ux);
+  array_init(nx + 2, ny + 2, &result);
+  array_init(nx + 2, ny + 2, &answer);
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = ux_imin; i <= nx; i++) {
       result[j][i] = 0.;
     }
   }
-  get_array_ux(ux);
-  for (size_t j = 1; j <= NY; j++) {
-    const double y = get_y(j);
-    for (size_t i = ux_imin; i <= NX; i++) {
-      const double x = get_x(i);
-      answer[j][i] = - get_ux(x, y) * get_duxdx(x, y);
+  get_array_ux(&domain, ux);
+  for (size_t j = 1; j <= ny; j++) {
+    const double y = get_y(&domain, j);
+    for (size_t i = ux_imin; i <= nx; i++) {
+      const double x = get_x(&domain, i);
+      answer[j][i] = - get_ux(&domain, x, y) * get_duxdx(&domain, x, y);
     }
   }
-  ux_advx(ux, 1., result);
+  ux_advx(&domain, ux, 1., result);
   double error[2] = {0., 0.};
-  check_error(answer, result, error);
-  printf("%6d % .15e % .15e\n", NX, error[0], error[1]);
-  free(    ux);
-  free(result);
-  free(answer);
+  check_error(&domain, answer, result, error);
+  printf("%6zu % .15e % .15e\n", nx, error[0], error[1]);
+  array_finalize(&ux);
+  array_finalize(&result);
+  array_finalize(&answer);
   return 0;
 }
 

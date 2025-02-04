@@ -135,6 +135,7 @@ int save(
     const size_t id,
     const size_t step,
     const double time,
+    const domain_t * const domain,
     const flow_field_t * const flow_field
 ) {
   int error_code = 0;
@@ -149,11 +150,13 @@ int save(
     LOGGER_FAILURE("failed to create a directory");
     goto abort;
   }
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
   write_npy_file(dir_name, "step", 0, NULL, "'<u8'", sizeof(size_t), &step);
   write_npy_file(dir_name, "time", 0, NULL, "'<f8'", sizeof(double), &time);
-  write_npy_file(dir_name, "ux", NDIMS, (size_t [NDIMS]){NY + 2, NX + 2}, "'<f8'", sizeof(double), flow_field->ux);
-  write_npy_file(dir_name, "uy", NDIMS, (size_t [NDIMS]){NY + 2, NX + 2}, "'<f8'", sizeof(double), flow_field->uy);
-  write_npy_file(dir_name,  "p", NDIMS, (size_t [NDIMS]){NY + 2, NX + 2}, "'<f8'", sizeof(double), flow_field-> p);
+  write_npy_file(dir_name, "ux", NDIMS, (size_t [NDIMS]){ny + 2, nx + 2}, "'<f8'", sizeof(double), &flow_field->ux[0][0]);
+  write_npy_file(dir_name, "uy", NDIMS, (size_t [NDIMS]){ny + 2, nx + 2}, "'<f8'", sizeof(double), &flow_field->uy[0][0]);
+  write_npy_file(dir_name,  "p", NDIMS, (size_t [NDIMS]){ny + 2, nx + 2}, "'<f8'", sizeof(double), &flow_field-> p[0][0]);
 abort:
   memory_free(dir_name);
   return error_code;

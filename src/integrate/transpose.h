@@ -3,7 +3,7 @@
 
 #include <stddef.h> // size_t
 
-extern int transpose (
+extern int transpose(
     const size_t nx,
     const size_t ny,
     const double * const buf0,

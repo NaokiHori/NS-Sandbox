@@ -3,12 +3,12 @@
 
 #include <stddef.h> // size_t
 
-extern void * memory_alloc (
+extern void * memory_alloc(
     const size_t nitems,
     const size_t size
 );
 
-extern void memory_free (
+extern void memory_free(
     void * const ptr
 );
 

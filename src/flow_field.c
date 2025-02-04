@@ -1,51 +1,40 @@
 #include <math.h>
-#include "memory.h"
 #include "logger.h"
+#include "array.h"
 #include "domain.h"
 #include "flow_field.h"
 #include "boundary_condition.h"
 #include "exchange_halo.h"
 
-static int allocate (
-    flow_field_t * const flow_field
+static int init_ux(
+    const domain_t * const domain,
+    double ** const ux
 ) {
-  array_t ** const     ux = &flow_field->    ux;
-  array_t ** const     uy = &flow_field->    uy;
-  array_t ** const      p = &flow_field->     p;
-  array_t ** const weight = &flow_field->weight;
-  *    ux = memory_alloc((NX + 2) * (NY + 2), sizeof(double));
-  *    uy = memory_alloc((NX + 2) * (NY + 2), sizeof(double));
-  *     p = memory_alloc((NX + 2) * (NY + 2), sizeof(double));
-  *weight = memory_alloc((NX + 2) * (NY + 2), sizeof(double));
-  return 0;
-}
-
-static int init_ux (
-    array_t * const ux
-) {
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
       ux[j][i] = 0.;
     }
   }
   if (X_PERIODIC) {
-    if (0 != exchange_halo_x(ux)) {
+    if (0 != exchange_halo_x(domain, ux)) {
       LOGGER_FAILURE("failed to exchange halo in x (ux)");
       goto abort;
     }
   } else {
-    if (0 != impose_boundary_condition_ux_x(ux)) {
+    if (0 != impose_boundary_condition_ux_x(domain, ux)) {
       LOGGER_FAILURE("failed to impose boundary condition in x (ux)");
       goto abort;
     }
   }
   if (Y_PERIODIC) {
-    if (0 != exchange_halo_y(ux)) {
+    if (0 != exchange_halo_y(domain, ux)) {
       LOGGER_FAILURE("failed to exchange halo in y (ux)");
       goto abort;
     }
   } else {
-    if (0 != impose_boundary_condition_ux_y(ux)) {
+    if (0 != impose_boundary_condition_ux_y(domain, ux)) {
       LOGGER_FAILURE("failed to impose boundary condition in y (ux)");
       goto abort;
     }
@@ -55,32 +44,35 @@ abort:
   return 1;
 }
 
-static int init_uy (
-    array_t * const uy
+static int init_uy(
+    const domain_t * const domain,
+    double ** const uy
 ) {
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
       uy[j][i] = -1.;
     }
   }
   if (X_PERIODIC) {
-    if (0 != exchange_halo_x(uy)) {
+    if (0 != exchange_halo_x(domain, uy)) {
       LOGGER_FAILURE("failed to exchange halo in x (uy)");
       goto abort;
     }
   } else {
-    if (0 != impose_boundary_condition_uy_x(uy)) {
+    if (0 != impose_boundary_condition_uy_x(domain, uy)) {
       LOGGER_FAILURE("failed to impose boundary condition in x (uy)");
       goto abort;
     }
   }
   if (Y_PERIODIC) {
-    if (0 != exchange_halo_y(uy)) {
+    if (0 != exchange_halo_y(domain, uy)) {
       LOGGER_FAILURE("failed to exchange halo in y (uy)");
       goto abort;
     }
   } else {
-    if (0 != impose_boundary_condition_uy_y(uy)) {
+    if (0 != impose_boundary_condition_uy_y(domain, uy)) {
       LOGGER_FAILURE("failed to impose boundary condition in y (uy)");
       goto abort;
     }
@@ -90,22 +82,25 @@ abort:
   return 1;
 }
 
-static int init_p (
-    array_t * const p
+static int init_p(
+    const domain_t * const domain,
+    double ** const p
 ) {
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
       p[j][i] = 0.;
     }
   }
   if (X_PERIODIC) {
-    if (0 != exchange_halo_x(p)) {
+    if (0 != exchange_halo_x(domain, p)) {
       LOGGER_FAILURE("failed to exchange halo in x (p)");
       goto abort;
     }
   }
   if (Y_PERIODIC) {
-    if (0 != exchange_halo_y(p)) {
+    if (0 != exchange_halo_y(domain, p)) {
       LOGGER_FAILURE("failed to exchange halo in y (p)");
       goto abort;
     }
@@ -115,49 +110,59 @@ abort:
   return 1;
 }
 
-static int init_weight (
-    array_t * const weight
+static int init_weight(
+    const domain_t * const domain,
+    double ** const weight
 ) {
+  const double lx = domain->lx;
+  const double ly = domain->ly;
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  const double dx = domain->dx;
+  const double dy = domain->dy;
   const double center[2] = {
-    0.501 * LX,
-    5. * LY / 6.,
+    0.501 * lx,
+    5. * ly / 6.,
   };
-  const double radius = LX / 16.;
-  for (size_t j = 0; j <= NY + 1; j++) {
-    const double y = 0.5 * (2 * j - 1) * DY;
-    for (size_t i = 0; i <= NX + 1; i++) {
-      const double x = 0.5 * (2 * i - 1) * DX;
+  const double radius = lx / 16.;
+  for (size_t j = 0; j <= ny + 1; j++) {
+    const double y = 0.5 * (2 * j - 1) * dy;
+    for (size_t i = 0; i <= nx + 1; i++) {
+      const double x = 0.5 * (2 * i - 1) * dx;
       const double d = sqrt(
           + pow(x - center[0], 2.)
           + pow(y - center[1], 2.)
       );
-      weight[j][i] = 0.5 * (1. + tanh(NY * (d - radius)));
+      weight[j][i] = 0.5 * (1. + tanh(ny * (d - radius)));
     }
   }
   return 0;
 }
 
-int flow_field_init (
+int flow_field_init(
+    const domain_t * const domain,
     flow_field_t * const flow_field
 ) {
-  if (0 != allocate(flow_field)) {
-    LOGGER_FAILURE("failed to allocate flow field");
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  array_init(nx + 2, ny + 2, &flow_field->ux);
+  array_init(nx + 2, ny + 2, &flow_field->uy);
+  array_init(nx + 2, ny + 2, &flow_field->p);
+  array_init(nx + 2, ny + 2, &flow_field->weight);
+  if (0 != init_ux(domain, flow_field->ux)) {
+    LOGGER_FAILURE("failed to initialize ux");
     goto abort;
   }
-  if (0 != init_ux(flow_field->ux)) {
-    LOGGER_FAILURE("failed to initialise ux");
+  if (0 != init_uy(domain, flow_field->uy)) {
+    LOGGER_FAILURE("failed to initialize uy");
     goto abort;
   }
-  if (0 != init_uy(flow_field->uy)) {
-    LOGGER_FAILURE("failed to initialise uy");
+  if (0 != init_p(domain, flow_field->p)) {
+    LOGGER_FAILURE("failed to initialize p");
     goto abort;
   }
-  if (0 != init_p(flow_field->p)) {
-    LOGGER_FAILURE("failed to initialise p");
-    goto abort;
-  }
-  if (0 != init_weight(flow_field->weight)) {
-    LOGGER_FAILURE("failed to initialise weight");
+  if (0 != init_weight(domain, flow_field->weight)) {
+    LOGGER_FAILURE("failed to initialize weight");
     goto abort;
   }
   return 0;
@@ -165,13 +170,13 @@ abort:
   return 1;
 }
 
-int flow_field_finalise (
+int flow_field_finalize(
     flow_field_t * const flow_field
 ) {
-  memory_free(flow_field->    ux);
-  memory_free(flow_field->    uy);
-  memory_free(flow_field->     p);
-  memory_free(flow_field->weight);
+  array_finalize(&flow_field->ux);
+  array_finalize(&flow_field->uy);
+  array_finalize(&flow_field->p);
+  array_finalize(&flow_field->weight);
   return 0;
 }
 

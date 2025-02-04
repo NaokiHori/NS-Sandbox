@@ -1,13 +1,14 @@
 #if !defined(ADVY_H)
 #define ADVY_H
 
-#include "array.h"
+#include "domain.h"
 
-extern int ux_advy (
-    const array_t * const uy,
-    const array_t * const ux,
+extern int ux_advy(
+    const domain_t * const domain,
+    double ** const uy,
+    double ** const ux,
     const double dt,
-    array_t * const dux
+    double ** const dux
 );
 
 #endif // ADVY_H

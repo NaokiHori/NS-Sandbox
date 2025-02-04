@@ -2,13 +2,12 @@
 #include <errno.h>
 #include <math.h>
 #include "logger.h"
-#include "domain.h"
 #include "flow_field.h"
 #include "./monitor.h"
 
 #define ROOT_DIRECTORY "output/log/"
 
-static int output (
+static int output(
     const size_t step,
     const double time,
     const char file_name[],
@@ -29,7 +28,7 @@ static int output (
   return 0;
 }
 
-static int print (
+static int print(
     const size_t step,
     const double time,
     const double dt
@@ -43,26 +42,30 @@ static int print (
   return 0;
 }
 
-static int monitor_divergence (
+static int monitor_divergence(
     const size_t step,
     const double time,
+    const domain_t * const domain,
     const flow_field_t * const flow_field
 ) {
   const char file_name[] = ROOT_DIRECTORY "divergence.dat";
-  const array_t * const ux = flow_field->ux;
-  const array_t * const uy = flow_field->uy;
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  const double dx = domain->dx;
+  const double dy = domain->dy;
+  double ** const ux = flow_field->ux;
+  double ** const uy = flow_field->uy;
   double div_max = 0.;
   double div_sum = 0.;
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
       const double dux = - ux[j    ][i    ]
                          + ux[j    ][i + 1];
       const double duy = - uy[j    ][i    ]
                          + uy[j + 1][i    ];
-      const double div = (
-          + 1. / DX * dux
-          + 1. / DY * duy
-      );
+      const double div =
+        + 1. / dx * dux
+        + 1. / dy * duy;
       div_max = fmax(div_max, fabs(div));
       div_sum = div_sum + div;
     }
@@ -70,44 +73,48 @@ static int monitor_divergence (
   return output(step, time, file_name, 2, (double []){div_max, div_sum});
 }
 
-static int monitor_max_velocity (
+static int monitor_max_velocity(
     const size_t step,
     const double time,
+    const domain_t * const domain,
     const flow_field_t * const flow_field
 ) {
   const char file_name[] = ROOT_DIRECTORY "max_velocity.dat";
-  const array_t * const ux = flow_field->ux;
-  const array_t * const uy = flow_field->uy;
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  double ** const ux = flow_field->ux;
+  double ** const uy = flow_field->uy;
   double ux_max = 0.;
   double uy_max = 0.;
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = ux_imin; i <= NX; i++) {
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = ux_imin; i <= nx; i++) {
       ux_max = fmax(ux_max, fabs(ux[j    ][i    ]));
     }
   }
-  for (size_t j = uy_jmin; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
+  for (size_t j = uy_jmin; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
       uy_max = fmax(uy_max, fabs(uy[j    ][i    ]));
     }
   }
   return output(step, time, file_name, 2, (double []){ux_max, uy_max});
 }
 
-int monitor (
+int monitor(
     const size_t step,
     const double time,
     const double dt,
+    const domain_t * const domain,
     const flow_field_t * const flow_field
 ) {
   if (0 != print(step, time, dt)) {
     LOGGER_FAILURE("failed to output metrics");
     goto abort;
   }
-  if (0 != monitor_divergence(step, time, flow_field)) {
+  if (0 != monitor_divergence(step, time, domain, flow_field)) {
     LOGGER_FAILURE("failed to check / output divergence");
     goto abort;
   }
-  if (0 != monitor_max_velocity(step, time, flow_field)) {
+  if (0 != monitor_max_velocity(step, time, domain, flow_field)) {
     LOGGER_FAILURE("failed to check / output maximum velocity");
     goto abort;
   }

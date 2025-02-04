@@ -2,58 +2,91 @@
 
 #include <assert.h>
 #include <math.h>
-#include "domain.h"
 #include "./test_util.h"
 
 static const double pi = 3.141592653589793;
 
-double get_x (
+double get_x(
+    const domain_t * const domain,
     const size_t i
 ) {
+  const double dx = domain->dx;
   assert(0 < i);
-  return 0.5 * (2 * i - 1) * DX;
+  return 0.5 * (2 * i - 1) * dx;
 }
 
-double get_y (
+double get_y(
+    const domain_t * const domain,
     const size_t j
 ) {
+  const double dy = domain->dy;
   assert(0 < j);
-  return 0.5 * (2 * j - 2) * DY;
+  return 0.5 * (2 * j - 2) * dy;
 }
 
-double get_duydx (
+double get_duydx(
+    const domain_t * const domain,
     const double x,
     const double y
 ) {
-  return 2. * pi / LX * cos(2. * pi * x / LX) * sin(2. * pi * y / LY);
+  const double lx = domain->lx;
+  const double ly = domain->ly;
+  return
+    2. * pi / lx
+    * cos(2. * pi * x / lx)
+    * sin(2. * pi * y / ly);
 }
 
-double get_duydy (
+double get_duydy(
+    const domain_t * const domain,
     const double x,
     const double y
 ) {
-  return 2. * pi / LY * sin(2. * pi * x / LX) * cos(2. * pi * y / LY);
+  const double lx = domain->lx;
+  const double ly = domain->ly;
+  return
+    2. * pi / ly
+    * sin(2. * pi * x / lx)
+    * cos(2. * pi * y / ly);
 }
 
-double get_d2uydx2 (
+double get_d2uydx2(
+    const domain_t * const domain,
     const double x,
     const double y
 ) {
-  return - 4. * pi * pi / LX / LX * sin(2. * pi * x / LX) * sin(2. * pi * y / LY);
+  const double lx = domain->lx;
+  const double ly = domain->ly;
+  return
+    - 4. * pi * pi / lx / lx
+    * sin(2. * pi * x / lx)
+    * sin(2. * pi * y / ly);
 }
 
-double get_d2uydy2 (
+double get_d2uydy2(
+    const domain_t * const domain,
     const double x,
     const double y
 ) {
-  return - 4. * pi * pi / LY / LY * sin(2. * pi * x / LX) * sin(2. * pi * y / LY);
+  const double lx = domain->lx;
+  const double ly = domain->ly;
+  return
+    - 4. * pi * pi / ly / ly
+    * sin(2. * pi * x / lx)
+    * sin(2. * pi * y / ly);
 }
 
-double get_dpdy (
+double get_dpdy(
+    const domain_t * const domain,
     const double x,
     const double y
 ) {
-  return 2. * pi / LY * sin(2. * pi * x / LX) * cos(2. * pi * y / LY);
+  const double lx = domain->lx;
+  const double ly = domain->ly;
+  return
+    2. * pi / ly
+    * sin(2. * pi * x / lx)
+    * cos(2. * pi * y / ly);
 }
 
 #else

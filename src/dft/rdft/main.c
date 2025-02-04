@@ -20,7 +20,7 @@ struct rdft_plan_t {
   double complex * buf;
 };
 
-static void * memory_alloc (
+static void * memory_alloc(
     const size_t size
 ) {
   void * const ptr = malloc(size);
@@ -31,14 +31,14 @@ static void * memory_alloc (
   return ptr;
 }
 
-static void memory_free (
+static void memory_free(
     void * const ptr
 ) {
   free(ptr);
 }
 
 // recursive Cooley-Tukey FFT for complex input/output
-static int dft (
+static int dft(
     const size_t nitems,
     const double sign,
     const size_t stride,
@@ -75,7 +75,7 @@ static int dft (
 	return 0;
 }
 
-int rdft_exec_f (
+int rdft_exec_f(
     rdft_plan_t * const plan,
     double * const xs
 ) {
@@ -116,7 +116,7 @@ int rdft_exec_f (
   return 0;
 }
 
-int rdft_exec_b (
+int rdft_exec_b(
     rdft_plan_t * const plan,
     double * const xs
 ) {
@@ -158,7 +158,7 @@ int rdft_exec_b (
   return 0;
 }
 
-int rdft_init_plan (
+int rdft_init_plan(
     const size_t nitems,
     const size_t repeat_for,
     rdft_plan_t ** const plan
@@ -185,7 +185,7 @@ int rdft_init_plan (
 }
 
 // clean-up a plan
-int rdft_destroy_plan (
+int rdft_destroy_plan(
     rdft_plan_t ** const plan
 ) {
   memory_free((*plan)->table_cos);

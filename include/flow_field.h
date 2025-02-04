@@ -1,21 +1,22 @@
 #if !defined(FLOW_FIELD_H)
 #define FLOW_FIELD_H
 
-#include "array.h" // array_t
+#include "domain.h" // domain_t
 
 typedef struct {
-  array_t * ux;
-  array_t * uy;
-  array_t *  p;
+  double ** ux;
+  double ** uy;
+  double **  p;
   // penalty to enforce zero velocity
-  array_t * weight;
+  double ** weight;
 } flow_field_t;
 
-extern int flow_field_init (
+extern int flow_field_init(
+    const domain_t * const domain,
     flow_field_t * const flow_field
 );
 
-extern int flow_field_finalise (
+extern int flow_field_finalize(
     flow_field_t * const flow_field
 );
 

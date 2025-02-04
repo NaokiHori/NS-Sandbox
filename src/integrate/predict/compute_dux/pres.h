@@ -1,12 +1,13 @@
 #if !defined(PRES_H)
 #define PRES_H
 
-#include "array.h"
+#include "domain.h"
 
-extern int ux_pres (
-    const array_t * const p,
+extern int ux_pres(
+    const domain_t * const domain,
+    double ** const p,
     const double dt,
-    array_t * const dux
+    double ** const dux
 );
 
 #endif // PRES_H

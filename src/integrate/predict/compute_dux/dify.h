@@ -1,13 +1,14 @@
 #if !defined(DIFY_H)
 #define DIFY_H
 
-#include "array.h"
+#include "domain.h"
 
-extern int ux_dify (
+extern int ux_dify(
+    const domain_t * const domain,
     const double c,
-    const array_t * const ux,
+    double ** const ux,
     const double dt,
-    array_t * const dux
+    double ** const dux
 );
 
 #endif // DIFY_H

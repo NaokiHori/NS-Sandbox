@@ -18,5 +18,5 @@ all:
 clean:
 	$(RM) -r $(TARGET)
 
-.PHONY : all clean help
+.PHOny : all clean help
 

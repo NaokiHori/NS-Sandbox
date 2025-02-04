@@ -17,7 +17,6 @@ if [ ${expected} = false ]; then
   exit 1
 fi
 
-length=1.
 resols=(8 16 32 64 128)
 
 : > ${target}.dat
@@ -26,7 +25,8 @@ for resol in ${resols[@]}; do
     -DTEST \
     -std=c99 -Wall -Wextra \
     -I../../../../include \
-    -DNX=${resol} -DNY=${resol} -DLX=${length} -DLY=${length} \
+    ../../../memory.c \
+    ../../../array.c \
     ../../../domain.c \
     ../test_util.c \
     ./test_util.c \
@@ -34,6 +34,6 @@ for resol in ${resols[@]}; do
     -o a.out \
     -lm \
     && \
-    ./a.out >> ${target}.dat
+    ./a.out ${resol} >> ${target}.dat
 done
 

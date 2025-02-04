@@ -1,7 +1,4 @@
 #include "logger.h"
-#include "domain.h"
-#include "flow_field.h"
-#include "flow_solver.h"
 #include "dft/rdft.h"
 #include "dft/dct.h"
 #include "tridiagonal_solver.h"
@@ -10,31 +7,36 @@
 #include "./transpose.h"
 
 int solve_poisson(
+    const domain_t * const domain,
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     const double dt
 ) {
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  const double dx = domain->dx;
+  const double dy = domain->dy;
   poisson_solver_t * const poisson_solver = &flow_solver->poisson_solver;
-  array_t * const psi = flow_solver->psi;
+  double ** const psi = flow_solver->psi;
   double * const buf0 = poisson_solver->buf0;
   double * const buf1 = poisson_solver->buf1;
   // assign right-hand side of Poisson equation
   {
-    const array_t * const ux = flow_field->ux;
-    const array_t * const uy = flow_field->uy;
+    double ** const ux = flow_field->ux;
+    double ** const uy = flow_field->uy;
     const double factor = 1. / dt / poisson_solver->dft_norm;
 #pragma omp parallel for
-    for (size_t j = 1; j <= NY; j++) {
-      for (size_t i = 1; i <= NX; i++) {
+    for (size_t j = 1; j <= ny; j++) {
+      for (size_t i = 1; i <= nx; i++) {
         const double dux = - ux[j    ][i    ]
                            + ux[j    ][i + 1];
         const double duy = - uy[j    ][i    ]
                            + uy[j + 1][i    ];
         const double div = (
-            + 1. / DX * dux
-            + 1. / DY * duy
+            + 1. / dx * dux
+            + 1. / dy * duy
         );
-        buf0[(j - 1) * NX + (i - 1)] = factor * div;
+        buf0[(j - 1) * nx + (i - 1)] = factor * div;
       }
     }
   }
@@ -53,7 +55,7 @@ int solve_poisson(
     }
   }
   // x-align to y-align
-  if (0 != transpose(NX, NY, buf0, buf1)) {
+  if (0 != transpose(nx, ny, buf0, buf1)) {
     LOGGER_FAILURE("failed to transpose array from x-aligned to y-aligned");
     goto abort;
   }
@@ -70,7 +72,7 @@ int solve_poisson(
     }
   }
   // y-align to x-align
-  if (0 != transpose(NY, NX, buf1, buf0)) {
+  if (0 != transpose(ny, nx, buf1, buf0)) {
     LOGGER_FAILURE("failed to transpose array from y-aligned to x-aligned");
     goto abort;
   }
@@ -89,22 +91,22 @@ int solve_poisson(
     }
   }
 #pragma omp parallel for
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
-      psi[j][i] = buf0[(j - 1) * NX + (i - 1)];
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
+      psi[j][i] = buf0[(j - 1) * nx + (i - 1)];
     }
   }
   // exchange halo
   // NOTE: since DCT assumes dpdx = 0,
   //       boundary conditions are not directly imposed
   if (X_PERIODIC) {
-    if (0 != exchange_halo_x(psi)) {
+    if (0 != exchange_halo_x(domain, psi)) {
       LOGGER_FAILURE("failed to exchange halo in x");
       goto abort;
     }
   }
   if (Y_PERIODIC) {
-    if (0 != exchange_halo_y(psi)) {
+    if (0 != exchange_halo_y(domain, psi)) {
       LOGGER_FAILURE("failed to exchange halo in y");
       goto abort;
     }

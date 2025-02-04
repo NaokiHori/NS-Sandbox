@@ -1,12 +1,13 @@
 #if !defined(ADVX_H)
 #define ADVX_H
 
-#include "array.h"
+#include "domain.h"
 
-extern int ux_advx (
-    const array_t * const ux,
+extern int ux_advx(
+    const domain_t * const domain,
+    double ** const ux,
     const double dt,
-    array_t * const dux
+    double ** const dux
 );
 
 #endif // ADVX_H

@@ -2,11 +2,11 @@
 #include <stdlib.h> // calloc, free, exit, EXIT_FAILURE
 #include "memory.h"
 
-void * memory_alloc (
+void * memory_alloc(
     const size_t nitems,
     const size_t size
 ) {
-  void * ptr = calloc(nitems, size);
+  void * const ptr = calloc(nitems, size);
   if (NULL == ptr) {
     goto abort;
   }
@@ -16,7 +16,7 @@ abort:
   exit(EXIT_FAILURE);
 }
 
-void memory_free (
+void memory_free(
     void * const ptr
 ) {
   free(ptr);

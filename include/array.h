@@ -1,8 +1,16 @@
 #if !defined(ARRAY_H)
 #define ARRAY_H
 
-#include "domain.h" // NX
+#include <stddef.h>
 
-typedef double array_t[NX + 2];
+extern int array_init(
+    const size_t nx,
+    const size_t ny,
+    double *** const array
+);
+
+extern int array_finalize(
+    double *** const array
+);
 
 #endif // ARRAY_H

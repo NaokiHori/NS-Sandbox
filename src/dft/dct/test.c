@@ -17,7 +17,7 @@
 static const double pi = 3.141592653589793238462643383;
 
 // compute DCT type 2 naively in O(N^2)
-static int naive_dct_2 (
+static int naive_dct_2(
     const size_t nitems,
     const double * xs,
     double * ys
@@ -34,7 +34,7 @@ static int naive_dct_2 (
 }
 
 // compute DCT type 3 naively in O(N^2)
-static int naive_dct_3 (
+static int naive_dct_3(
     const size_t nitems,
     const double * xs,
     double * ys
@@ -57,7 +57,7 @@ static const size_t nitems_list[] = {
 };
 static const size_t repeat_for = 2;
 
-static int test0 (
+static int test0(
     void
 ) {
   for (size_t n = 0; n < sizeof(nitems_list) / sizeof(nitems_list[0]); n++) {
@@ -95,7 +95,7 @@ static int test0 (
   return 0;
 }
 
-static int test1 (
+static int test1(
     void
 ) {
   for (size_t n = 0; n < sizeof(nitems_list) / sizeof(nitems_list[0]); n++) {
@@ -132,7 +132,7 @@ static int test1 (
   return 0;
 }
 
-static int test2 (
+static int test2(
     void
 ) {
   for (size_t n = 0; n < sizeof(nitems_list) / sizeof(nitems_list[0]); n++) {
@@ -169,7 +169,7 @@ static int test2 (
   return 0;
 }
 
-int main (
+int main(
     void
 ) {
   int retval = 0;

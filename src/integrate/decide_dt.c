@@ -2,8 +2,6 @@
 #include <math.h> // fmin, fmax, fabs, pow
 #include "logger.h"
 #include "param.h"
-#include "domain.h"
-#include "flow_field.h"
 #include "./decide_dt.h"
 
 static const size_t ndims = 2;
@@ -19,23 +17,28 @@ static const struct {
 };
 
 static int decide_dt_adv(
+    const domain_t * const domain,
     const flow_field_t * const flow_field,
     double * const dt
 ) {
+  const size_t nx = domain->nx;
+  const size_t ny = domain->ny;
+  const double dx = domain->dx;
+  const double dy = domain->dy;
   const double small = 1.e-8;
-  const array_t * const ux = flow_field->ux;
-  const array_t * const uy = flow_field->uy;
+  double ** const ux = flow_field->ux;
+  double ** const uy = flow_field->uy;
   *dt = 1.;
-  for (size_t j = 1; j <= NY; j++) {
-    for (size_t i = ux_imin; i <= NX; i++) {
+  for (size_t j = 1; j <= ny; j++) {
+    for (size_t i = ux_imin; i <= nx; i++) {
       const double denominator = fmax(small, fabs(ux[j][i]));
-      *dt = fmin(*dt, DX / denominator);
+      *dt = fmin(*dt, dx / denominator);
     }
   }
-  for (size_t j = uy_jmin; j <= NY; j++) {
-    for (size_t i = 1; i <= NX; i++) {
+  for (size_t j = uy_jmin; j <= ny; j++) {
+    for (size_t i = 1; i <= nx; i++) {
       const double denominator = fmax(small, fabs(uy[j][i]));
-      *dt = fmin(*dt, DY / denominator);
+      *dt = fmin(*dt, dy / denominator);
     }
   }
   *dt *= safety_factors.adv;
@@ -43,24 +46,28 @@ static int decide_dt_adv(
 }
 
 static int decide_dt_dif(
+    const domain_t * const domain,
     double * const dt
 ) {
-  *dt = Re * 0.5 / ndims * pow(fmin(DX, DY), 2.);
+  const double dx = domain->dx;
+  const double dy = domain->dy;
+  *dt = Re * 0.5 / ndims * pow(fmin(dx, dy), 2.);
   *dt *= safety_factors.dif;
   return 0;
 }
 
 int decide_dt(
+    const domain_t * const domain,
     const flow_field_t * const flow_field,
     double * const dt
 ) {
   double dt_adv = 0.;
   double dt_dif = 0.;
-  if (0 != decide_dt_adv(flow_field, &dt_adv)) {
+  if (0 != decide_dt_adv(domain, flow_field, &dt_adv)) {
     LOGGER_FAILURE("failed to find advective time-step constraint");
     goto abort;
   }
-  if (0 != decide_dt_dif(&dt_dif)) {
+  if (0 != decide_dt_dif(domain, &dt_dif)) {
     LOGGER_FAILURE("failed to find diffusive time-step constraint");
     goto abort;
   }

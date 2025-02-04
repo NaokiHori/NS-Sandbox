@@ -1,7 +1,7 @@
 #if !defined(FLOW_SOLVER_H)
 #define FLOW_SOLVER_H
 
-#include "array.h" // array_t
+#include "domain.h" // domain_t
 #include "dft/dct.h" // dct_plan_t
 #include "dft/rdft.h" // rdft_plan_t
 #include "tridiagonal_solver.h" // tridiagonal_solver_plan_t
@@ -25,17 +25,18 @@ typedef struct {
 } poisson_solver_t;
 
 typedef struct {
-  array_t * psi;
-  array_t * dux;
-  array_t * duy;
+  double ** psi;
+  double ** dux;
+  double ** duy;
   poisson_solver_t poisson_solver;
 } flow_solver_t;
 
 extern int flow_solver_init(
+    const domain_t * const domain,
     flow_solver_t * const flow_solver
 );
 
-extern int flow_solver_finalise(
+extern int flow_solver_finalize(
     flow_solver_t * const flow_solver
 );
 

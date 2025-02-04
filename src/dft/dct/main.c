@@ -22,7 +22,7 @@ struct dct_plan_t {
   double * buf;
 };
 
-static void * memory_alloc (
+static void * memory_alloc(
     const size_t size
 ) {
   void * const ptr = malloc(size);
@@ -33,13 +33,13 @@ static void * memory_alloc (
   return ptr;
 }
 
-static void memory_free (
+static void memory_free(
     void * const ptr
 ) {
   free(ptr);
 }
 
-static int dct2 (
+static int dct2(
     const size_t nitems,
     const size_t inv,
     const double * const restrict table,
@@ -94,7 +94,7 @@ static int dct2 (
   return 0;
 }
 
-static int dct3 (
+static int dct3(
     const size_t nitems,
     const size_t inv,
     const double * const restrict table,
@@ -150,7 +150,7 @@ static int dct3 (
 }
 
 // allocate, initalise, and pack
-int dct_init_plan (
+int dct_init_plan(
     const size_t nitems,
     const size_t repeat_for,
     dct_plan_t ** const plan
@@ -177,7 +177,7 @@ int dct_init_plan (
   return 0;
 }
 
-int dct_destroy_plan (
+int dct_destroy_plan(
     dct_plan_t ** const plan
 ) {
   if (NULL == *plan) {
@@ -191,10 +191,10 @@ int dct_destroy_plan (
   return 0;
 }
 
-int dct_exec_f (
+int dct_exec_f(
     dct_plan_t * const plan,
     double * restrict const xs
-){
+) {
   if (NULL == plan) {
     fprintf(stderr, "the plan is NULL\n");
     return 1;
@@ -213,7 +213,7 @@ int dct_exec_f (
   return 0;
 }
 
-int dct_exec_b (
+int dct_exec_b(
     dct_plan_t * const plan,
     double * restrict const xs
 ) {
