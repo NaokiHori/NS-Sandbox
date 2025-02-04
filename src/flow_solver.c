@@ -5,7 +5,7 @@
 #include "flow_solver.h"
 #include "dft/rdft.h"
 #include "dft/dct.h"
-#include "tdm.h"
+#include "tridiagonal_solver.h"
 
 static int init_x_solver (
     poisson_solver_t * const poisson_solver
@@ -42,32 +42,32 @@ abort:
 static int init_y_solver (
     poisson_solver_t * const poisson_solver
 ) {
-  tdm_plan_t ** const tdm_plan = &poisson_solver->tdm_plan;
-  if (0 != tdm_init_plan(NY, NX, Y_PERIODIC, tdm_plan)) {
-    LOGGER_FAILURE("failed to initialise TDM solver");
+  tridiagonal_solver_plan_t ** const tridiagonal_solver_plan = &poisson_solver->tridiagonal_solver_plan;
+  if (0 != tridiagonal_solver_init_plan(NY, NX, Y_PERIODIC, tridiagonal_solver_plan)) {
+    LOGGER_FAILURE("failed to initialise tridiagonal_solver solver");
     goto abort;
   }
-  double ** const tdm_l = &poisson_solver->tdm_l;
-  double ** const tdm_c = &poisson_solver->tdm_c;
-  double ** const tdm_u = &poisson_solver->tdm_u;
-  *tdm_l = memory_alloc(NY, sizeof(double));
-  *tdm_c = memory_alloc(NY, sizeof(double));
-  *tdm_u = memory_alloc(NY, sizeof(double));
+  double ** const tridiagonal_solver_l = &poisson_solver->tridiagonal_solver_l;
+  double ** const tridiagonal_solver_c = &poisson_solver->tridiagonal_solver_c;
+  double ** const tridiagonal_solver_u = &poisson_solver->tridiagonal_solver_u;
+  *tridiagonal_solver_l = memory_alloc(NY, sizeof(double));
+  *tridiagonal_solver_c = memory_alloc(NY, sizeof(double));
+  *tridiagonal_solver_u = memory_alloc(NY, sizeof(double));
   for (size_t j = 0; j < NY; j++) {
     const double l = 1. / DY / DY;
     const double u = 1. / DY / DY;
-    (*tdm_l)[j] = + 1. * l;
-    (*tdm_u)[j] = + 1. * u;
-    (*tdm_c)[j] = - 1. * l
+    (*tridiagonal_solver_l)[j] = + 1. * l;
+    (*tridiagonal_solver_u)[j] = + 1. * u;
+    (*tridiagonal_solver_c)[j] = - 1. * l
                   - 1. * u;
     // for non-periodic cases,
     //   impose Neumann boundary condition
     //   dp/dy = 0
     if (!Y_PERIODIC &&      0 == j) {
-      (*tdm_c)[j] += 1. * l;
+      (*tridiagonal_solver_c)[j] += 1. * l;
     }
     if (!Y_PERIODIC && NY - 1 == j) {
-      (*tdm_c)[j] += 1. * u;
+      (*tridiagonal_solver_c)[j] += 1. * u;
     }
   }
   return 0;
@@ -96,9 +96,9 @@ int flow_solver_init (
     LOGGER_FAILURE("failed to initialise dft part of poisson solver");
     goto abort;
   }
-  // y direction: tdm-related things
+  // y direction: tridiagonal_solver-related things
   if (0 != init_y_solver(poisson_solver)) {
-    LOGGER_FAILURE("failed to initialise tdm part of poisson solver");
+    LOGGER_FAILURE("failed to initialise tridiagonal_solver part of poisson solver");
     goto abort;
   }
   return 0;
@@ -123,11 +123,11 @@ int flow_solver_finalise (
   } else {
     dct_destroy_plan(&poisson_solver->dct_plan);
   }
-  tdm_destroy_plan(&poisson_solver->tdm_plan);
+  tridiagonal_solver_destroy_plan(&poisson_solver->tridiagonal_solver_plan);
   memory_free(poisson_solver->wavenumbers);
-  memory_free(poisson_solver->tdm_l);
-  memory_free(poisson_solver->tdm_c);
-  memory_free(poisson_solver->tdm_u);
+  memory_free(poisson_solver->tridiagonal_solver_l);
+  memory_free(poisson_solver->tridiagonal_solver_c);
+  memory_free(poisson_solver->tridiagonal_solver_u);
   return 0;
 }
 

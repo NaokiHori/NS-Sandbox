@@ -1,10 +1,10 @@
-#if defined(TDM_TEST)
+#if defined(TRIDIAGONAL_SOLVER_TEST)
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "memory.h"
-#include "tdm.h"
+#include "tridiagonal_solver.h"
 
 #define MY_ASSERT(cond) \
   if (!(cond)) { \
@@ -54,10 +54,10 @@ static int test0 (
   for (size_t i = 0; i < nitems * REPEAT_FOR; i++) {
     x[i] = q[i];
   }
-  tdm_plan_t * plan = NULL;
-  MY_ASSERT(0 == tdm_init_plan(nitems, REPEAT_FOR, false, &plan));
+  tridiagonal_solver_plan_t * plan = NULL;
+  MY_ASSERT(0 == tridiagonal_solver_init_plan(nitems, REPEAT_FOR, false, &plan));
   MY_ASSERT(NULL != plan);
-  MY_ASSERT(0 == tdm_solve(plan, l, c, u, (double [REPEAT_FOR]){0., 0.}, x));
+  MY_ASSERT(0 == tridiagonal_solver_exec(plan, l, c, u, (double [REPEAT_FOR]){0., 0.}, x));
   MY_ASSERT(fabs(x[0] - 2.) < small);
   MY_ASSERT(fabs(x[1] - 1.) < small);
   MY_ASSERT(fabs(x[2] + 1.) < small);
@@ -74,7 +74,7 @@ static int test0 (
   MY_ASSERT(fabs(l[1] * x[4] + c[1] * x[5] + u[1] * x[6] - q[5]) < small);
   MY_ASSERT(fabs(l[2] * x[5] + c[2] * x[6] + u[2] * x[7] - q[6]) < small);
   MY_ASSERT(fabs(l[3] * x[6] + c[3] * x[7]               - q[7]) < small);
-  MY_ASSERT(0 == tdm_destroy_plan(&plan));
+  MY_ASSERT(0 == tridiagonal_solver_destroy_plan(&plan));
   MY_ASSERT(NULL == plan);
   memory_free(l);
   memory_free(c);
@@ -118,10 +118,10 @@ static int test1 (
   for (size_t i = 0; i < nitems * REPEAT_FOR; i++) {
     x[i] = q[i];
   }
-  tdm_plan_t * plan = NULL;
-  MY_ASSERT(0 == tdm_init_plan(nitems, REPEAT_FOR, true, &plan));
+  tridiagonal_solver_plan_t * plan = NULL;
+  MY_ASSERT(0 == tridiagonal_solver_init_plan(nitems, REPEAT_FOR, true, &plan));
   MY_ASSERT(NULL != plan);
-  MY_ASSERT(0 == tdm_solve(plan, l, c, u, (double [REPEAT_FOR]){0., 0.}, x));
+  MY_ASSERT(0 == tridiagonal_solver_exec(plan, l, c, u, (double [REPEAT_FOR]){0., 0.}, x));
   MY_ASSERT(fabs(x[0] - 1.) < small);
   MY_ASSERT(fabs(x[1] + 1.) < small);
   MY_ASSERT(fabs(x[2] - 1.) < small);
@@ -138,7 +138,7 @@ static int test1 (
   MY_ASSERT(fabs(l[1] * x[4] + c[1] * x[5] + u[1] * x[6] - q[5]) < small);
   MY_ASSERT(fabs(l[2] * x[5] + c[2] * x[6] + u[2] * x[7] - q[6]) < small);
   MY_ASSERT(fabs(l[3] * x[6] + c[3] * x[7] + u[3] * x[4] - q[7]) < small);
-  MY_ASSERT(0 == tdm_destroy_plan(&plan));
+  MY_ASSERT(0 == tridiagonal_solver_destroy_plan(&plan));
   MY_ASSERT(NULL == plan);
   memory_free(l);
   memory_free(c);
@@ -182,10 +182,10 @@ static int test2 (
   for (size_t i = 0; i < nitems * REPEAT_FOR; i++) {
     x[i] = q[i];
   }
-  tdm_plan_t * plan = NULL;
-  MY_ASSERT(0 == tdm_init_plan(nitems, REPEAT_FOR, true, &plan));
+  tridiagonal_solver_plan_t * plan = NULL;
+  MY_ASSERT(0 == tridiagonal_solver_init_plan(nitems, REPEAT_FOR, true, &plan));
   MY_ASSERT(NULL != plan);
-  MY_ASSERT(0 == tdm_solve(plan, l, c, u, (double [REPEAT_FOR]){0., 0.}, x));
+  MY_ASSERT(0 == tridiagonal_solver_exec(plan, l, c, u, (double [REPEAT_FOR]){0., 0.}, x));
   MY_ASSERT(fabs(l[0] * x[3] + c[0] * x[0] + u[0] * x[1] - q[0]) < small);
   MY_ASSERT(fabs(l[1] * x[0] + c[1] * x[1] + u[1] * x[2] - q[1]) < small);
   MY_ASSERT(fabs(l[2] * x[1] + c[2] * x[2] + u[2] * x[3] - q[2]) < small);
@@ -194,7 +194,7 @@ static int test2 (
   MY_ASSERT(fabs(l[1] * x[4] + c[1] * x[5] + u[1] * x[6] - q[5]) < small);
   MY_ASSERT(fabs(l[2] * x[5] + c[2] * x[6] + u[2] * x[7] - q[6]) < small);
   MY_ASSERT(fabs(l[3] * x[6] + c[3] * x[7] + u[3] * x[4] - q[7]) < small);
-  MY_ASSERT(0 == tdm_destroy_plan(&plan));
+  MY_ASSERT(0 == tridiagonal_solver_destroy_plan(&plan));
   MY_ASSERT(NULL == plan);
   memory_free(l);
   memory_free(c);
@@ -217,4 +217,4 @@ int main (
 
 #else
 extern char dummy;
-#endif // TDM_TEST
+#endif // TRIDIAGONAL_SOLVER_TEST

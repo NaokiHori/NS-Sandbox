@@ -3,9 +3,9 @@
 #include "flow_field.h"
 #include "flow_solver.h"
 #include "exchange_halo.h"
-#include "./internal.h"
+#include "./correct.h"
 
-static int correct_ux (
+static int correct_ux(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     const double dt
@@ -38,7 +38,7 @@ abort:
   return 1;
 }
 
-static int correct_uy (
+static int correct_uy(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     const double dt
@@ -71,7 +71,7 @@ abort:
   return 1;
 }
 
-int correct (
+int correct(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     const double dt

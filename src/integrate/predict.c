@@ -3,13 +3,13 @@
 #include "param.h"
 #include "flow_field.h"
 #include "flow_solver.h"
-#include "impose_bc.h"
+#include "boundary_condition.h"
 #include "exchange_halo.h"
-#include "../internal.h"
-#include "./compute_dux.h"
-#include "./compute_duy.h"
+#include "./predict.h"
+#include "./predict/compute_dux.h"
+#include "./predict/compute_duy.h"
 
-static int update_ux (
+static int update_ux(
     const array_t * const dux,
     const array_t * const weight,
     array_t * const ux
@@ -37,7 +37,7 @@ static int update_ux (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_ux_x(ux)) {
+    if (0 != impose_boundary_condition_ux_x(ux)) {
       LOGGER_FAILURE("failed to impose boundary condition in x (ux)");
       goto abort;
     }
@@ -48,7 +48,7 @@ static int update_ux (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_ux_y(ux)) {
+    if (0 != impose_boundary_condition_ux_y(ux)) {
       LOGGER_FAILURE("failed to impose boundary condition in y (ux)");
       goto abort;
     }
@@ -58,7 +58,7 @@ abort:
   return 1;
 }
 
-static int update_uy (
+static int update_uy(
     const array_t * const duy,
     const array_t * const weight,
     array_t * const uy
@@ -86,7 +86,7 @@ static int update_uy (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_uy_x(uy)) {
+    if (0 != impose_boundary_condition_uy_x(uy)) {
       LOGGER_FAILURE("failed to impose boundary condition in x (uy)");
       goto abort;
     }
@@ -97,7 +97,7 @@ static int update_uy (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_uy_y(uy)) {
+    if (0 != impose_boundary_condition_uy_y(uy)) {
       LOGGER_FAILURE("failed to impose boundary condition in y (uy)");
       goto abort;
     }
@@ -107,7 +107,7 @@ abort:
   return 1;
 }
 
-int predict (
+int predict(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     const double dt

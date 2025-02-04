@@ -1,7 +1,7 @@
 # Makefile for test use
 
 CC     := cc
-CFLAG  := -DTDM_TEST -std=c99 -Wall -Wextra -Werror $(ARG_CFLAG)
+CFLAG  := -DTRIDIAGONAL_SOLVER_TEST -std=c99 -Wall -Wextra -Werror $(ARG_CFLAG)
 INC    := -I../../include
 LIB    := -lm
 SRCS   := ../memory.c test.c main.c

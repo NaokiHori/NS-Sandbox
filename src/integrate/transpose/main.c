@@ -1,6 +1,6 @@
-#include "transpose.h"
+#include "../transpose.h"
 
-int transpose (
+int transpose(
     const size_t nx,
     const size_t ny,
     const double * const buf0,

@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "domain.h"
 #include "flow_field.h"
-#include "monitor.h"
+#include "./monitor.h"
 
 #define ROOT_DIRECTORY "output/log/"
 

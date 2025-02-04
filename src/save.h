@@ -4,7 +4,7 @@
 #include <stddef.h> // size_t
 #include "flow_field.h" // flow_field_t
 
-extern int save (
+extern int save(
     const size_t id,
     const size_t step,
     const double time,

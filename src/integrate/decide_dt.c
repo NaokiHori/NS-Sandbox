@@ -4,7 +4,7 @@
 #include "param.h"
 #include "domain.h"
 #include "flow_field.h"
-#include "./internal.h"
+#include "./decide_dt.h"
 
 static const size_t ndims = 2;
 
@@ -18,7 +18,7 @@ static const struct {
   .dif = 0.95,
 };
 
-static int decide_dt_adv (
+static int decide_dt_adv(
     const flow_field_t * const flow_field,
     double * const dt
 ) {
@@ -42,7 +42,7 @@ static int decide_dt_adv (
   return 0;
 }
 
-static int decide_dt_dif (
+static int decide_dt_dif(
     double * const dt
 ) {
   *dt = Re * 0.5 / ndims * pow(fmin(DX, DY), 2.);
@@ -50,7 +50,7 @@ static int decide_dt_dif (
   return 0;
 }
 
-int decide_dt (
+int decide_dt(
     const flow_field_t * const flow_field,
     double * const dt
 ) {

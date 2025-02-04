@@ -7,8 +7,8 @@
 #include "logger.h"
 #include "domain.h"
 #include "flow_field.h"
-#include "save.h"
-#include "./snpyio.h"
+#include "./save.h"
+#include "./save/snpyio.h"
 
 #define ROOT_DIRECTORY "output/save/"
 

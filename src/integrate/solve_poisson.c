@@ -4,12 +4,12 @@
 #include "flow_solver.h"
 #include "dft/rdft.h"
 #include "dft/dct.h"
-#include "tdm.h"
-#include "transpose.h"
+#include "tridiagonal_solver.h"
 #include "exchange_halo.h"
-#include "./internal.h"
+#include "./solve_poisson.h"
+#include "./transpose.h"
 
-int solve_poisson (
+int solve_poisson(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     const double dt
@@ -59,12 +59,12 @@ int solve_poisson (
   }
   // solve linear systems in y
   {
-    tdm_plan_t * const tdm_plan = poisson_solver->tdm_plan;
-    const double * const tdm_l = poisson_solver->tdm_l;
-    const double * const tdm_c = poisson_solver->tdm_c;
-    const double * const tdm_u = poisson_solver->tdm_u;
+    tridiagonal_solver_plan_t * const tridiagonal_solver_plan = poisson_solver->tridiagonal_solver_plan;
+    const double * const tridiagonal_solver_l = poisson_solver->tridiagonal_solver_l;
+    const double * const tridiagonal_solver_c = poisson_solver->tridiagonal_solver_c;
+    const double * const tridiagonal_solver_u = poisson_solver->tridiagonal_solver_u;
     const double * const wavenumbers = poisson_solver->wavenumbers;
-    if (0 != tdm_solve(tdm_plan, tdm_l, tdm_c, tdm_u, wavenumbers, buf1)) {
+    if (0 != tridiagonal_solver_exec(tridiagonal_solver_plan, tridiagonal_solver_l, tridiagonal_solver_c, tridiagonal_solver_u, wavenumbers, buf1)) {
       LOGGER_FAILURE("failed to solve tri-diagonal matrix");
       goto abort;
     }

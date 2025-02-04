@@ -1,11 +1,14 @@
 #include "logger.h"
 #include "flow_field.h"
 #include "flow_solver.h"
-#include "integrate.h"
-#include "./internal.h"
-#include "./predict.h"
+#include "./integrate.h"
+#include "./integrate/decide_dt.h"
+#include "./integrate/predict.h"
+#include "./integrate/solve_poisson.h"
+#include "./integrate/correct.h"
+#include "./integrate/update_pressure.h"
 
-int integrate (
+int integrate(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver,
     double * const dt

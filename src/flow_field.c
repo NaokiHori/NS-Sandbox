@@ -3,7 +3,7 @@
 #include "logger.h"
 #include "domain.h"
 #include "flow_field.h"
-#include "impose_bc.h"
+#include "boundary_condition.h"
 #include "exchange_halo.h"
 
 static int allocate (
@@ -34,7 +34,7 @@ static int init_ux (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_ux_x(ux)) {
+    if (0 != impose_boundary_condition_ux_x(ux)) {
       LOGGER_FAILURE("failed to impose boundary condition in x (ux)");
       goto abort;
     }
@@ -45,7 +45,7 @@ static int init_ux (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_ux_y(ux)) {
+    if (0 != impose_boundary_condition_ux_y(ux)) {
       LOGGER_FAILURE("failed to impose boundary condition in y (ux)");
       goto abort;
     }
@@ -69,7 +69,7 @@ static int init_uy (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_uy_x(uy)) {
+    if (0 != impose_boundary_condition_uy_x(uy)) {
       LOGGER_FAILURE("failed to impose boundary condition in x (uy)");
       goto abort;
     }
@@ -80,7 +80,7 @@ static int init_uy (
       goto abort;
     }
   } else {
-    if (0 != impose_bc_uy_y(uy)) {
+    if (0 != impose_boundary_condition_uy_y(uy)) {
       LOGGER_FAILURE("failed to impose boundary condition in y (uy)");
       goto abort;
     }

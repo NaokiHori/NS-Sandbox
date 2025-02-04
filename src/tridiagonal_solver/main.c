@@ -2,60 +2,60 @@
 #include <stdbool.h>
 #include <float.h> // DBL_EPSILON
 #include "memory.h"
-#include "tdm.h"
+#include "tridiagonal_solver.h"
 
-struct tdm_internal_t {
+struct tridiagonal_solver_internal_t {
   // auxiliary buffers
   double * v;
   double * w;
 };
 
-int tdm_init_plan (
-    const size_t nitems,
-    const size_t repeat_for,
-    const bool is_periodic,
-    tdm_plan_t ** tdm_plan
-){
-  const size_t minimum_nitems = 3;
-  if (nitems < minimum_nitems) {
-    fprintf(stderr, "size %zu is too small, give larger than %zu\n", nitems, minimum_nitems);
-    return 1;
-  }
-  *tdm_plan = memory_alloc(1, sizeof(tdm_plan_t));
-  (*tdm_plan)->internal = memory_alloc(1, sizeof(tdm_internal_t));
-  (*tdm_plan)->nitems = nitems;
-  (*tdm_plan)->repeat_for = repeat_for;
-  (*tdm_plan)->is_periodic = is_periodic;
-  (*tdm_plan)->internal->v = memory_alloc(nitems * repeat_for, sizeof(double));
-  (*tdm_plan)->internal->w = memory_alloc(nitems * repeat_for, sizeof(double));
-  return 0;
-}
-
-static double myfabs (
+static double myfabs(
     const double v
 ) {
   return v < 0. ? - v : v;
 }
 
-int tdm_solve (
-    tdm_plan_t * const tdm_plan,
+int tridiagonal_solver_init_plan(
+    const size_t nitems,
+    const size_t repeat_for,
+    const bool is_periodic,
+    tridiagonal_solver_plan_t ** const tridiagonal_solver_plan
+) {
+  const size_t minimum_nitems = 3;
+  if (nitems < minimum_nitems) {
+    fprintf(stderr, "size %zu is too small, give larger than %zu\n", nitems, minimum_nitems);
+    return 1;
+  }
+  *tridiagonal_solver_plan = memory_alloc(1, sizeof(tridiagonal_solver_plan_t));
+  (*tridiagonal_solver_plan)->internal = memory_alloc(1, sizeof(tridiagonal_solver_internal_t));
+  (*tridiagonal_solver_plan)->nitems = nitems;
+  (*tridiagonal_solver_plan)->repeat_for = repeat_for;
+  (*tridiagonal_solver_plan)->is_periodic = is_periodic;
+  (*tridiagonal_solver_plan)->internal->v = memory_alloc(nitems * repeat_for, sizeof(double));
+  (*tridiagonal_solver_plan)->internal->w = memory_alloc(nitems * repeat_for, sizeof(double));
+  return 0;
+}
+
+int tridiagonal_solver_exec(
+    tridiagonal_solver_plan_t * const tridiagonal_solver_plan,
     const double * const l,
     const double * const c,
     const double * const u,
     const double * const c_offsets,
     double * const qs
 ) {
-  if (NULL == tdm_plan) {
+  if (NULL == tridiagonal_solver_plan) {
     return 1;
   }
-  const size_t nitems = tdm_plan->nitems;
-  const size_t repeat_for = tdm_plan->repeat_for;
-  const bool is_periodic = tdm_plan->is_periodic;
+  const size_t nitems = tridiagonal_solver_plan->nitems;
+  const size_t repeat_for = tridiagonal_solver_plan->repeat_for;
+  const bool is_periodic = tridiagonal_solver_plan->is_periodic;
 #pragma omp parallel for
   for (size_t j = 0; j < repeat_for; j++) {
     const double c_offset = c_offsets[j];
-    double * const v = tdm_plan->internal->v + j * nitems;
-    double * const w = tdm_plan->internal->w + j * nitems;
+    double * const v = tridiagonal_solver_plan->internal->v + j * nitems;
+    double * const w = tridiagonal_solver_plan->internal->w + j * nitems;
     double * const q = qs + j * nitems;
     if (is_periodic) {
       // consider a perturbed system as well
@@ -125,14 +125,14 @@ int tdm_solve (
   return 0;
 }
 
-int tdm_destroy_plan (
-    tdm_plan_t ** tdm_plan
-){
-  memory_free((*tdm_plan)->internal->v);
-  memory_free((*tdm_plan)->internal->w);
-  memory_free((*tdm_plan)->internal);
-  memory_free(*tdm_plan);
-  *tdm_plan = NULL;
+int tridiagonal_solver_destroy_plan(
+    tridiagonal_solver_plan_t ** const tridiagonal_solver_plan
+) {
+  memory_free((*tridiagonal_solver_plan)->internal->v);
+  memory_free((*tridiagonal_solver_plan)->internal->w);
+  memory_free((*tridiagonal_solver_plan)->internal);
+  memory_free(*tridiagonal_solver_plan);
+  *tridiagonal_solver_plan = NULL;
   return 0;
 }
 

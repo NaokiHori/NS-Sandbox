@@ -1,7 +1,7 @@
 #if defined(TRANSPOSE_TEST)
 
 #include <stdio.h>
-#include "transpose.h"
+#include "../transpose.h"
 
 #define MY_ASSERT(cond) \
   if (!(cond)) { \

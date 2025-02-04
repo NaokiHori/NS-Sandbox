@@ -1,9 +1,9 @@
 #include <stddef.h> // size_t
 #include "logger.h"
 #include "domain.h"
-#include "impose_bc.h"
+#include "boundary_condition.h"
 
-int impose_bc_uy_x (
+int impose_boundary_condition_uy_x(
     array_t * const uy
 ) {
   if (X_PERIODIC) {
@@ -21,7 +21,7 @@ abort:
   return 1;
 }
 
-int impose_bc_uy_y (
+int impose_boundary_condition_uy_y(
     array_t * const uy
 ) {
   if (Y_PERIODIC) {

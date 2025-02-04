@@ -1,16 +1,16 @@
 #include <stddef.h> // size_t
 #include "flow_field.h"
 #include "flow_solver.h"
-#include "integrate.h"
-#include "monitor.h"
-#include "save.h"
+#include "./integrate.h"
+#include "./monitor.h"
+#include "./save.h"
 
 typedef struct {
   double monitor;
   double save;
 } schedule_t;
 
-int main (
+int main(
     void
 ) {
   flow_field_t flow_field = {};

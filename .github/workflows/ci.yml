@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        cases: ["dft/dct", "dft/rdft", "tdm", "transpose"]
+        cases: ["dft/dct", "dft/rdft", "tridiagonal_solver", "integrate/transpose"]
     steps:
       - name: Install dependencies
         run: |

@@ -2,9 +2,9 @@
 #include "flow_field.h"
 #include "flow_solver.h"
 #include "exchange_halo.h"
-#include "./internal.h"
+#include "./update_pressure.h"
 
-int update_pressure (
+int update_pressure(
     flow_field_t * const flow_field,
     flow_solver_t * const flow_solver
 ) {

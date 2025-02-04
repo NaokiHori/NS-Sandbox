@@ -4,7 +4,7 @@
 #include "array.h" // array_t
 #include "dft/dct.h" // dct_plan_t
 #include "dft/rdft.h" // rdft_plan_t
-#include "tdm.h" // tdm_plan_t
+#include "tridiagonal_solver.h" // tridiagonal_solver_plan_t
 
 // variables used to solve Poisson equations
 typedef struct {
@@ -17,11 +17,11 @@ typedef struct {
   dct_plan_t * dct_plan;
   double dft_norm;
   double * wavenumbers;
-  // y direction: tdm-related things
-  tdm_plan_t * tdm_plan;
-  double * tdm_l;
-  double * tdm_c;
-  double * tdm_u;
+  // y direction: tridiagonal_solver-related things
+  tridiagonal_solver_plan_t * tridiagonal_solver_plan;
+  double * tridiagonal_solver_l;
+  double * tridiagonal_solver_c;
+  double * tridiagonal_solver_u;
 } poisson_solver_t;
 
 typedef struct {
@@ -31,11 +31,11 @@ typedef struct {
   poisson_solver_t poisson_solver;
 } flow_solver_t;
 
-extern int flow_solver_init (
+extern int flow_solver_init(
     flow_solver_t * const flow_solver
 );
 
-extern int flow_solver_finalise (
+extern int flow_solver_finalise(
     flow_solver_t * const flow_solver
 );
 

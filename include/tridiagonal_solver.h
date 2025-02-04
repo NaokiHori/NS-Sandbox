@@ -1,10 +1,10 @@
-#if !defined(TDM_H)
-#define TDM_H
+#if !defined(TRIDIAGONAL_SOLVER_H)
+#define TRIDIAGONAL_SOLVER_H
 
 #include <stddef.h> // size_t
 #include <stdbool.h> // bool
 
-typedef struct tdm_internal_t tdm_internal_t;
+typedef struct tridiagonal_solver_internal_t tridiagonal_solver_internal_t;
 
 typedef struct {
   // size of linear system
@@ -13,18 +13,18 @@ typedef struct {
   size_t repeat_for;
   bool is_periodic;
   // for internal use, opaque pointer
-  tdm_internal_t * internal;
-} tdm_plan_t;
+  tridiagonal_solver_internal_t * internal;
+} tridiagonal_solver_plan_t;
 
-extern int tdm_init_plan (
+extern int tridiagonal_solver_init_plan(
     const size_t nitems,
     const size_t repeat_for,
     const bool is_periodic,
-    tdm_plan_t ** const tdm_plan
+    tridiagonal_solver_plan_t ** const tridiagonal_solver_plan
 );
 
-extern int tdm_solve (
-    tdm_plan_t * const tdm_plan,
+extern int tridiagonal_solver_exec(
+    tridiagonal_solver_plan_t * const tridiagonal_solver_plan,
     // tri-diagonal matrix, lower, center, upper-diagonals
     const double * const l,
     const double * const c,
@@ -35,8 +35,8 @@ extern int tdm_solve (
     double * const q
 );
 
-extern int tdm_destroy_plan (
-    tdm_plan_t ** const tdm_plan
+extern int tridiagonal_solver_destroy_plan(
+    tridiagonal_solver_plan_t ** const tridiagonal_solver_plan
 );
 
-#endif // TDM_H
+#endif // TRIDIAGONAL_SOLVER_H
