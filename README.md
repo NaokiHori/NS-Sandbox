@@ -1,10 +1,10 @@
-# NS Sandbox
+# Very Simple NS Solver
 
-[![CI](https://github.com/NaokiHori/NS-Sandbox/actions/workflows/ci.yml/badge.svg)](https://github.com/NaokiHori/NS-Sandbox/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/NaokiHori/NS-Sandbox)](https://opensource.org/license/MIT)
-[![Last Commit](https://img.shields.io/github/last-commit/NaokiHori/NS-Sandbox/main)](https://github.com/NaokiHori/NS-Sandbox/commits/main)
+[![CI](https://github.com/NaokiHori/VerySimpleNSSolver/actions/workflows/ci.yml/badge.svg)](https://github.com/NaokiHori/VerySimpleNSSolver/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/NaokiHori/VerySimpleNSSolver)](https://opensource.org/license/MIT)
+[![Last Commit](https://img.shields.io/github/last-commit/NaokiHori/VerySimpleNSSolver/main)](https://github.com/NaokiHori/VerySimpleNSSolver/commits/main)
 
-[![thumbnail](https://github.com/NaokiHori/NS-Sandbox/blob/main/thumbnail.jpg)](https://youtu.be/MdViM5HzCDs)
+[![cover](https://github.com/NaokiHori/VerySimpleNSSolver/blob/main/cover.jpg)](https://youtu.be/MdViM5HzCDs)
 
 An extremely simple two-dimensional incompressible Navier-Stokes solver designed to test various numerical algorithms.
 
@@ -30,8 +30,8 @@ For the sake of transparency (and for fun), in-house Fourier transforms, linear 
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/NaokiHori/NS-Sandbox
-    cd NS-Sandbox
+    git clone https://github.com/NaokiHori/VerySimpleNSSolver
+    cd VerySimpleNSSolver
     ```
 
 2. Build the project:
