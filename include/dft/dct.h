@@ -10,24 +10,24 @@ typedef struct dct_plan_t dct_plan_t;
 extern int dct_init_plan(
     const size_t nitems,
     const size_t repeat_for,
-    dct_plan_t ** plan
+    dct_plan_t ** const plan
 );
 
 // clean-up a plan
 extern int dct_destroy_plan(
-    dct_plan_t ** plan
+    dct_plan_t ** const plan
 );
 
 // perform forward transform (DCT type 2)
 extern int dct_exec_f(
-    dct_plan_t * plan,
-    double * restrict xs
+    dct_plan_t * const plan,
+    double * const xs
 );
 
 // perform backward transform (DCT type 3)
 extern int dct_exec_b(
-    dct_plan_t * plan,
-    double * restrict xs
+    dct_plan_t * const plan,
+    double * const xs
 );
 
 #endif // DCT_H
